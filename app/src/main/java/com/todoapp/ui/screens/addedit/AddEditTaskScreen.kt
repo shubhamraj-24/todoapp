@@ -134,6 +134,14 @@ fun AddEditTaskScreen(
                 onPrioritySelected = viewModel::onPriorityChange
             )
 
+            uiState.errorMessage?.let { errorMessage ->
+                Text(
+                    text = errorMessage,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+
             Spacer(modifier = Modifier.weight(1f))
 
             Button(

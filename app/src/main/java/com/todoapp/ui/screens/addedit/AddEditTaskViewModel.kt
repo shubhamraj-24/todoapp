@@ -63,29 +63,33 @@ class AddEditTaskViewModel @Inject constructor(
     fun saveTask(onSuccess: () -> Unit) {
         val state = _uiState.value
         if (state.title.isBlank()) {
-            _uiState.value = state.copy(isTitleError = true)
+            _uiState.value = state.copy(isTitleError = true, errorMessage = null)
             return
         }
 
         viewModelScope.launch {
-            _uiState.value = state.copy(isLoading = true)
+            _uiState.value = state.copy(isLoading = true, errorMessage = null)
             try {
-                val savedTaskId = if (state.id != null) {
+                var operationSucceeded = false
+                if (state.id != null) {
+                    // Issue1: Check if existingTask exists
                     val existingTask = taskRepository.getTaskById(state.id)
-                    existingTask?.let {
-                        val updatedTask = it.copy(
+                    if (existingTask != null) {
+                        val updatedTask = existingTask.copy(
                             title = state.title,
                             description = state.description.ifBlank { null },
                             dueDate = state.dueDate,
                             priority = state.priority
                         )
                         taskRepository.updateTask(updatedTask)
-                        reminderManager.cancelReminder(it.id)
+                        reminderManager.cancelReminder(existingTask.id)
                         if (state.dueDate != null) {
                             reminderManager.scheduleReminder(updatedTask)
                         }
+                        operationSucceeded = true
+                    } else {
+                        _uiState.value = state.copy(isLoading = false, errorMessage = "Task not found")
                     }
-                    state.id
                 } else {
                     val newTaskId = taskRepository.insertTask(
                         com.todoapp.domain.model.Task(
@@ -95,15 +99,25 @@ class AddEditTaskViewModel @Inject constructor(
                             priority = state.priority
                         )
                     )
+                    // Issue2: Use directly constructed task with new ID instead of re-querying
                     if (state.dueDate != null) {
-                        val newTask = taskRepository.getTaskById(newTaskId)
-                        newTask?.let { reminderManager.scheduleReminder(it) }
+                        val newTask = com.todoapp.domain.model.Task(
+                            id = newTaskId,
+                            title = state.title,
+                            description = state.description.ifBlank { null },
+                            dueDate = state.dueDate,
+                            priority = state.priority,
+                            isCompleted = false
+                        )
+                        reminderManager.scheduleReminder(newTask)
                     }
-                    newTaskId
+                    operationSucceeded = true
                 }
-                onSuccess()
+                if (operationSucceeded) {
+                    onSuccess()
+                }
             } catch (e: Exception) {
-                _uiState.value = state.copy(isLoading = false)
+                _uiState.value = state.copy(isLoading = false, errorMessage = e.localizedMessage)
             }
         }
     }

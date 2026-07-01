@@ -10,5 +10,6 @@ data class AddEditTaskUiState(
     val dueDate: Instant? = null,
     val priority: Priority = Priority.MEDIUM,
     val isTitleError: Boolean = false,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val errorMessage: String? = null
 )
