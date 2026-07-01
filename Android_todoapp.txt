@@ -1,0 +1,139 @@
+Fresher Onboarding Task
+Todo / Task Manager App
+Duration: 1 Week Language: Kotlin Min API: API 26+
+
+1. Overview
+
+Welcome to the team! This task is designed to help you get hands-on with the core Android components we
+use daily. You will build a fully functional Todo / Task Manager app using Kotlin and the technologies listed
+below.
+
+By the end of this task, you should be comfortable with:
+- Kotlin language features in an Android context
+- Building UIs with Jetpack Compose
+- Navigating between screens using the Navigation component
+- Using Activity, Service, and BroadcastReceiver effectively
+- Implementing deep links to open the app from external sources
+- Defining and consuming an AIDL interface for IPC
+
+2. App Requirements
+
+2.1 Core Screens
+
+- Task List Screen — displays all tasks with title, priority badge, and due date
+- Add / Edit Task Screen — form with title, description, due date picker, and priority selector
+- Task Detail Screen — full task details with an option to mark as complete or delete
+- Notification Settings Screen — toggle reminders and set a default reminder offset
+
+2.2 Features
+
+- Create, read, update, and delete tasks (CRUD)
+- Set a due date and time for each task
+- Mark tasks as complete; completed tasks shown with strikethrough
+- Filter tasks by status: All / Active / Completed
+- Sort tasks by due date or priority
+- Background reminder notification fired by a Service at the scheduled time
+- A BroadcastReceiver that reschedules reminders after device reboot
+- Deep link to open a specific task directly: taskapp://task/{taskId}
+- An AIDL service that exposes task count to a companion/test client app
+
+3. Component Mapping
+
+Kotlin: Entire codebase—data classes, coroutines, extension functions, sealed classes for UI state.
+Use data classes for Task model; coroutines for DB ops; sealed class for UiState.
+
+Jetpack Compose: All screens and UI components. LazyColumn, custom Composables, state hoisting, MaterialTheme.
+
+Navigation Component: NavHost with typed routes, passing taskId argument, back-stack management.
+
+Activity: MainActivity hosts NavHost; handles deep link intent. Single Activity pattern; onNewIntent().
+
+Service: TaskReminderService fires notifications. Foreground Service for Android 14+; triggered via WorkManager or AlarmManager.
+
+BroadcastReceiver: BootReceiver reschedules alarms after reboot; SnoozeReceiver handles notification snooze.
+
+Deep Link:
+adb shell am start -a android.intent.action.VIEW -d "taskapp://task/1"
+
+AIDL:
+ITaskService.aidl exposes getTaskCount(): Int to external clients.
+
+4. Day-by-Day Plan
+
+Day 1: Setup & Architecture
+- Create project
+- Set up Room DB
+- Define Task data class and DAO
+- Set up Hilt DI
+- Create TaskRepository and TaskViewModel
+
+Day 2: Compose UI
+- TaskListScreen
+- TaskDetailScreen
+- Filter chips
+
+Day 3: Navigation & Deep Link
+- NavHost
+- Add/Edit navigation
+- Deep link
+- MainActivity handling
+
+Day 4: Add/Edit & Notifications
+- Add/Edit form
+- Date/time picker
+- TaskReminderService
+- Scheduled notifications
+
+Day 5: BroadcastReceiver & Polish
+- BootReceiver
+- SnoozeReceiver
+- Sorting
+- Material 3 polish
+
+Day 6: AIDL
+- ITaskService.aidl
+- TaskAidlService
+- Test client
+
+Day 7: Testing
+- Unit tests
+- UI tests
+- Bug fixes
+- Demo recording
+- Push to Git
+
+5. Technical Guidelines
+
+Architecture:
+- MVVM
+- Compose UI observes ViewModel
+- Repository abstracts Room DAO
+- Hilt
+- Coroutines + Flow
+
+Libraries:
+- Room
+- Hilt
+- Navigation Compose
+- WorkManager or AlarmManager
+- Coil (if needed)
+- Material 3 only
+
+Code Quality:
+- Kotlin only
+- Android Kotlin Style Guide
+- strings.xml
+- No business logic in Composables
+- Handle edge cases
+
+6. Submission Checklist
+
+- GitHub repository shared
+- App builds successfully
+- All 4 screens functional
+- Deep link tested
+- Notification survives reboot
+- AIDL returns correct task count
+- 5+ unit tests and 2 UI tests
+- README with setup, architecture, deep links, AIDL
+- 2–3 minute screen recording
