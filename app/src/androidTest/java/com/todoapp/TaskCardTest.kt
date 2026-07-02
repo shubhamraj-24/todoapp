@@ -1,4 +1,4 @@
-package com.todoapp.ui.components
+package com.todoapp
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -7,6 +7,7 @@ import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.todoapp.domain.model.Priority
 import com.todoapp.domain.model.Task
+import com.todoapp.ui.components.TaskCard
 import com.todoapp.ui.theme.TodoAppTheme
 import org.junit.Rule
 import org.junit.Test

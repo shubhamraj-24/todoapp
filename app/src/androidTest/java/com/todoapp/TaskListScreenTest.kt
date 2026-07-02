@@ -1,43 +1,45 @@
-package com.todoapp.ui.screens.tasklist
+package com.todoapp
 
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.todoapp.data.database.AppDatabase
 import com.todoapp.domain.model.Priority
 import com.todoapp.domain.model.Task
 import com.todoapp.domain.repository.TaskRepository
+import com.todoapp.ui.screens.tasklist.TaskListScreen
 import com.todoapp.ui.theme.TodoAppTheme
 import dagger.hilt.android.testing.HiltAndroidTest
-import dagger.hilt.android.testing.UninstallModules
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.time.Instant
 import javax.inject.Inject
 
 @HiltAndroidTest
-@UninstallModules(com.todoapp.di.DatabaseModule::class)
 @RunWith(AndroidJUnit4::class)
 class TaskListScreenTest {
 
     @get:Rule(order = 0)
-    val hiltRule = HiltTestRule(this)
+    val hiltRule = dagger.hilt.android.testing.HiltAndroidRule(this)
 
     @get:Rule(order = 1)
-    val composeTestRule = createComposeRule()
+    val composeTestRule = createAndroidComposeRule<HiltTestActivity>()
 
     @Inject
     lateinit var taskRepository: TaskRepository
 
+    @Inject
+    lateinit var database: AppDatabase
+
     @Before
     fun setup() {
-        hiltRule.hiltRule.inject()
+        hiltRule.inject()
+        database.clearAllTables()
     }
 
     @Test
@@ -52,11 +54,22 @@ class TaskListScreenTest {
             }
         }
 
+        // Wait for potential loading to finish
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onAllNodesWithText("No tasks yet").fetchSemanticsNodes().isNotEmpty()
+        }
+
         composeTestRule.onNodeWithText("No tasks yet").assertIsDisplayed()
     }
 
     @Test
     fun taskListScreen_withTasks_displaysTasks() = runTest {
+        val task = Task(
+            title = "Test Task",
+            priority = Priority.MEDIUM
+        )
+        taskRepository.insertTask(task)
+
         composeTestRule.setContent {
             TodoAppTheme {
                 TaskListScreen(
@@ -67,6 +80,11 @@ class TaskListScreenTest {
             }
         }
 
-        composeTestRule.onNodeWithText("Tasks").assertIsDisplayed()
+        // Wait for task to be loaded and displayed
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onAllNodesWithText("Test Task").fetchSemanticsNodes().isNotEmpty()
+        }
+
+        composeTestRule.onNodeWithText("Test Task").assertIsDisplayed()
     }
 }

@@ -1,0 +1,21 @@
+# Android Studio / IntelliJ
+.idea/
+*.iml
+.gradle/
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+cmake-build-*/
+.DS_Store
+
+# Build artifacts
+build/
+app/build/
+
+# Gradle
+.gradle/
+gradlew.bat
+
+# Project specific
+Android_todoapp.txt

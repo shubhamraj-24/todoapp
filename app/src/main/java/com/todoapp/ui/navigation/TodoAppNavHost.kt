@@ -7,6 +7,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.todoapp.ui.screens.addedit.AddEditTaskScreen
 import com.todoapp.ui.screens.taskdetail.TaskDetailScreen
 import com.todoapp.ui.screens.tasklist.TaskListScreen
@@ -41,6 +42,9 @@ fun TodoAppNavHost(
             route = NavDestinations.TaskDetail.route,
             arguments = listOf(
                 navArgument("taskId") { type = NavType.LongType }
+            ),
+            deepLinks = listOf(
+                navDeepLink { uriPattern = "taskapp://task/{taskId}" }
             )
         ) {
             TaskDetailScreen(

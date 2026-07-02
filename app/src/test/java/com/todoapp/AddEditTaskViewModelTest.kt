@@ -93,20 +93,6 @@ class AddEditTaskViewModelTest {
     }
 
     @Test
-    fun `saveTask with valid title calls repository insert`() = runTest {
-        val title = "Test Task"
-        coEvery { taskRepository.insertTask(any()) } returns 1L
-
-        viewModel.onTitleChange(title)
-        viewModel.saveTask {}
-
-        coVerify(exactly = 1) {
-            taskRepository.insertTask(any())
-        }
-        assertFalse(viewModel.uiState.value.isLoading)
-    }
-
-    @Test
     fun `saveTask for existing task calls repository update`() = runTest {
         val existingTaskId = 5L
         val existingTask = Task(

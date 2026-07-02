@@ -159,12 +159,12 @@ fun TaskDetailScreen(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    Button(
+                    OutlinedButton(
                         onClick = {
                             viewModel.deleteTask()
                             onDeleteClick()
                         },
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.Delete,
