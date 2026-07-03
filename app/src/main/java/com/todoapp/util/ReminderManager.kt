@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import com.todoapp.domain.model.Task
 import com.todoapp.receiver.ReminderReceiver
 
@@ -31,13 +32,23 @@ class ReminderManager(private val context: Context) {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 if (alarmManager.canScheduleExactAlarms()) {
+                    Log.d("ReminderManager", "Scheduling exact alarm for task: ${task.id}")
                     alarmManager.setExactAndAllowWhileIdle(
+                        AlarmManager.RTC_WAKEUP,
+                        triggerAtMillis,
+                        pendingIntent
+                    )
+                } else {
+                    Log.w("ReminderManager", "Exact alarm permission missing. Falling back to inexact for task: ${task.id}")
+                    // Fallback to inexact alarm if exact permission is missing
+                    alarmManager.setAndAllowWhileIdle(
                         AlarmManager.RTC_WAKEUP,
                         triggerAtMillis,
                         pendingIntent
                     )
                 }
             } else {
+                Log.d("ReminderManager", "Scheduling exact alarm (pre-S) for task: ${task.id}")
                 alarmManager.setExactAndAllowWhileIdle(
                     AlarmManager.RTC_WAKEUP,
                     triggerAtMillis,
